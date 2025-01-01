@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id             Int       @id @default(autoincrement())
+  username       String    @unique
+  email          String    @unique
+  password       String
+  food           Food[]
+  recipe         Recipe[]
+  createdAt      DateTime  @default(now())
+}
+
+model Food {
+  id             Int         @id @default(autoincrement())
+  name           String
+  amount         Int         
+  dateLogged     DateTime    @default(now())
+  expiryDate     DateTime
+  amountUsed     Int         @default(0)
+  userId         Int
+  user           User        @relation(fields: [userId], references: [id])
+  recipes        Recipe[]
+}
+
+model Recipe {
+  id             Int         @id @default(autoincrement())
+  name           String
+  ingredients    String[]
+  directions     String[]
+  foods          Food[]
+  userId         Int
+  user           User        @relation(fields: [userId], references: [id])
+}
